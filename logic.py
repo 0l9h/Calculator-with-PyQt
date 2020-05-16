@@ -3,9 +3,9 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from interface import Ui_Form
 from operations import math_operations
 from math import ceil
+from debug import AvoidBugs
 
-
-class Example(Ui_Form, math_operations):
+class Example(Ui_Form, math_operations, AvoidBugs):
 
     values_list = []
     line = ''
@@ -31,17 +31,21 @@ class Example(Ui_Form, math_operations):
     
 
     def num_button_clicked(self):
+        self.killExcessiveElement()
         sender = self.sender()
         self.line += sender.text()      #   Get button value
+        self.delFirstZero()
         self.lineEdit.setText(self.line)        #   Write new value into lineEdit
 
 
     def op_button_clicked(self):
+        sender = self.sender()
+       # if self.op != sender.text() or len(self.line) > 0:
+        self.killExcessiveElement()
         self.pushButton_PLUS.setStyleSheet('color: #4a4a4a')    #   Set default color to operation buttons
         self.pushButton_MINUS.setStyleSheet('color: #4a4a4a')
         self.pushButton_MULTIPLY.setStyleSheet('color: #4a4a4a')
         self.pushButton_DIVIDE.setStyleSheet('color: #4a4a4a')
-        sender = self.sender()
         self.del_all()
         if sender.text() == '+':
             self.addition()
@@ -55,7 +59,7 @@ class Example(Ui_Form, math_operations):
             self.equals()
         elif sender.text() == 'DEL':
             self.delete()
-        print(self.values_list)
+
 
 
     def del_all(self):
@@ -69,28 +73,36 @@ class Example(Ui_Form, math_operations):
 
 
     def getAnswer(self):
+        self.killExcessiveElement()
         self.values_list.clear()
+        if int(self.answer) == float(self.answer):
+            self.answer = int(self.answer)
         self.values_list.append(str(self.answer))   #   Get answer
         self.lineEdit.setText(self.values_list[0])
 
 
     def checkout(self):
-        if self.op == '+':                                                  #   If user wrote "+" before
-            self.answer = float(self.values_list[0]) + self.values_list[1]    #   Add two numbers
-            self.getAnswer()                                                #   get Answer
+        try:
+            if self.op == '+':                                                  #   If user wrote "+" before
+                self.answer = float(self.values_list[0]) + self.values_list[1]    #   Add two numbers
+                self.getAnswer()                                                #   get Answer
+            elif self.op == '-':
+                self.answer = float(self.values_list[0]) - self.values_list[1]
+                self.getAnswer()
+            elif self.op == '*':
+                self.answer = float(self.values_list[0]) * self.values_list[1]
+                self.getAnswer()
+            elif self.op == '/':
+                try:
+                    self.answer = float(self.values_list[0]) / self.values_list[1]
+                except ZeroDivisionError:                                    #   Catch ZeroDivisionError
+                    print('Don\'t play with zero')
+                    self.answer = 0
+                self.getAnswer()
+                   
             self.op = ''
-        elif self.op == '-':
-            self.answer = float(self.values_list[0]) - self.values_list[1]
-            self.getAnswer()
-            self.op = ''
-        elif self.op == '*':
-            self.answer = float(self.values_list[0]) * self.values_list[1]
-            self.getAnswer()
-            self.op = ''
-        elif self.op == '/':
-            self.answer = float(self.values_list[0]) / self.values_list[1]
-            self.getAnswer()
-            self.op = ''
+        except IndexError:      #   if user changes operation, don't cause a crash
+            pass    
 
 
 

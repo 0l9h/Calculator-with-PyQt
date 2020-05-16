@@ -100,9 +100,9 @@ class Ui_Form(QtWidgets.QMainWindow):
         self.pushButton_3.setFont(font)
         self.pushButton_3.setObjectName("pushButton_3")
         self.gridLayout.addWidget(self.pushButton_3, 3, 2, 1, 1)
-        self.lineEdit = QtWidgets.QLineEdit(self.gridLayoutWidget)
-        self.lineEdit.setStyleSheet("QLineEdit{\n"
-"    height: 30px;\n"
+        self.lineEdit = QtWidgets.QLabel(self.gridLayoutWidget)
+        self.lineEdit.setStyleSheet("QLabel{\n"
+"    height: 30px;\nbackground-color: #6ebfb8;\nfont: 75 16pt 'Palatino Linotype';\n"
 "}")
         self.lineEdit.setObjectName("lineEdit")
         self.gridLayout.addWidget(self.lineEdit, 2, 0, 1, 4)
